@@ -6,7 +6,6 @@ import {
   FormControlLabel,
   Checkbox,
   Typography,
-  Input,
 } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import useProducts from "../context/productContext";
@@ -62,24 +61,18 @@ const Sidebar = ({ sidebarFilteredProducts, setSidebarFilteredProducts }) => {
   };
 
   const handleRatingsChange = (rating) => {
-    const filteredProduct = products.filter(
-      (product) => product.ratings === rating
-    );
-    setRatingsFilters(filteredProduct);
-    console.log("ratings filter product", filteredProduct);
+    let newRatings = [...ratingsFilters];
+    if (newRatings.includes(rating)) {
+      newRatings = newRatings.filter((selected) => selected !== rating);
+    } else {
+      newRatings.push(rating);
+    }
+    setRatingsFilters(newRatings);
   };
+
   // USEFFECT HOOK FUNCTIONALITIES TO RENDER THE DATA
-  useEffect(() => {
-    const filtered = products.filter((item) =>
-      Object.keys(priceRanges).some((rangeKey) => {
-        const { min, max, checked } = priceRanges[rangeKey];
-        return checked && item.price >= min && item.price <= max;
-      })
-    );
 
-    setSidebarFilteredProducts(filtered);
-  }, [priceRanges]);
-
+  // BRAND FILTER
   useEffect(() => {
     setSidebarFilteredProducts(
       products.filter((prod) => brandFilters.includes(prod.brand))
@@ -87,11 +80,25 @@ const Sidebar = ({ sidebarFilteredProducts, setSidebarFilteredProducts }) => {
     console.log("product brand filter", sidebarFilteredProducts);
   }, [brandFilters]);
 
+  // PRICE RANGE FILTER
   useEffect(() => {
-    setSidebarFilteredProducts(
-      products.filter((product) => ratingsFilters.includes(product))
+    const filtered = products.filter((item) =>
+      Object.keys(priceRanges).some((rangeKey) => {
+        const { min, max, checked } = priceRanges[rangeKey];
+        return checked && item.price >= min && item.price <= max;
+      })
     );
+    setSidebarFilteredProducts(filtered);
+  }, [priceRanges]);
+
+// RATINGS
+  useEffect(() => {
+    const filteredProducts = products.filter((product) =>
+      ratingsFilters.includes(product.ratings)
+    );
+    setSidebarFilteredProducts(filteredProducts);
   }, [ratingsFilters]);
+  
   // JSX ELEMENT
   return (
     <div className="w-[100%] flex items-baseline gap-1 xsm:flex-col xxsm:flex-row">
@@ -153,6 +160,7 @@ const Sidebar = ({ sidebarFilteredProducts, setSidebarFilteredProducts }) => {
                   <FormControlLabel
                     key={index}
                     control={<Checkbox size="12px" />}
+                    checked={ratingsFilters.includes(rating)}
                     label={<ReactStars count={rating} value={rating} />}
                     value={rating}
                     onChange={() => handleRatingsChange(rating)}
