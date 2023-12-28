@@ -146,24 +146,18 @@ const Sidebar = ({ sidebarFilteredProducts, setSidebarFilteredProducts }) => {
         </AccordionSummary>
         <AccordionDetails>
           <div className="flex flex-col flex-wrap">
-            {products.map((product, index) => {
-              let i = index;
-              if (i < 5) {
-                return (
+            {ratingsArray.map((rating, index) => {
+              return (
+                <>
                   <FormControlLabel
+                    key={index}
                     control={<Checkbox size="12px" />}
-                    label={
-                      <ReactStars
-                        count={ratingsArray[i]}
-                        value={ratingsArray[i]}
-                      />
-                    }
-                    value={ratingsArray[i]}
-                    checked={ratingsFilters.includes(ratingsArray[i])}
-                    onChange={() => handleRatingsChange(ratingsArray[i])}
+                    label={<ReactStars count={rating} value={rating} />}
+                    value={rating}
+                    onChange={() => handleRatingsChange(rating)}
                   />
-                );
-              }
+                </>
+              );
             })}
           </div>
         </AccordionDetails>
